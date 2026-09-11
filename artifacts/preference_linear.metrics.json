@@ -1,0 +1,92 @@
+{
+  "btl_cv": {
+    "folds": [
+      {
+        "fold": 1,
+        "n_train_mols": 276,
+        "n_test_mols": 69,
+        "n_train_pairs": 12956,
+        "n_test_pairs": 2450,
+        "train_pair_acc": 0.9902747761654832,
+        "test_pair_acc": 0.5008163265306123,
+        "test_spearman": -0.04819145049324078
+      },
+      {
+        "fold": 2,
+        "n_train_mols": 276,
+        "n_test_mols": 69,
+        "n_train_pairs": 12990,
+        "n_test_pairs": 2389,
+        "train_pair_acc": 0.9930715935334873,
+        "test_pair_acc": 0.5583926329007953,
+        "test_spearman": 0.13836317135549875
+      },
+      {
+        "fold": 3,
+        "n_train_mols": 276,
+        "n_test_mols": 69,
+        "n_train_pairs": 12990,
+        "n_test_pairs": 2560,
+        "train_pair_acc": 0.9896843725943033,
+        "test_pair_acc": 0.56484375,
+        "test_spearman": 0.15544533655504644
+      },
+      {
+        "fold": 4,
+        "n_train_mols": 276,
+        "n_test_mols": 69,
+        "n_train_pairs": 12966,
+        "n_test_pairs": 2449,
+        "train_pair_acc": 0.9878142835107203,
+        "test_pair_acc": 0.550837076357697,
+        "test_spearman": 0.14110339788089152
+      },
+      {
+        "fold": 5,
+        "n_train_mols": 276,
+        "n_test_mols": 69,
+        "n_train_pairs": 12960,
+        "n_test_pairs": 2439,
+        "train_pair_acc": 0.9993827160493827,
+        "test_pair_acc": 0.46494464944649444,
+        "test_spearman": -0.05926196565582756
+      }
+    ],
+    "n_mols": 345
+  },
+  "xgb_cv": {
+    "folds": [
+      {
+        "fold": 1,
+        "n_test_mols": 69,
+        "test_spearman": -0.02287175739861162,
+        "test_pair_acc": 0.4975510204081633
+      },
+      {
+        "fold": 2,
+        "n_test_mols": 69,
+        "test_spearman": 0.2213737668980636,
+        "test_pair_acc": 0.5583926329007953
+      },
+      {
+        "fold": 3,
+        "n_test_mols": 69,
+        "test_spearman": 0.3021063592685288,
+        "test_pair_acc": 0.6109375
+      },
+      {
+        "fold": 4,
+        "n_test_mols": 69,
+        "test_spearman": 0.2679576178297406,
+        "test_pair_acc": 0.6031033074724377
+      },
+      {
+        "fold": 5,
+        "n_test_mols": 69,
+        "test_spearman": 0.08169528681037634,
+        "test_pair_acc": 0.5248052480524805
+      }
+    ],
+    "n_mols": 345
+  }
+}

@@ -1,0 +1,11 @@
+# Paths are relative to the CO2_IE_Dataset root.
+guacamol:
+  path: ../Molecule_Generation_Workflow/publication/co2/data/scored_components_nconf2.csv
+  require_gate_ok: true
+  n: 5
+axelrolov:
+  path: ../Molecule_Generation_Workflow/publication/co2/data/axelrolov_scored_nconf2.csv
+  require_gate_ok: false
+  n: 5
+mine:
+  path: data/mine
