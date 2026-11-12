@@ -16,6 +16,7 @@ CO2_CO_MIN, CO2_CO_MAX = 1.10, 1.22
 CO2_ANGLE_MIN = 165.0
 MIN_HOST_CO2_DIST = 2.20
 SEED_CLEARANCE = 2.55
+AZIMUTH_ANGLES_DEG = (0.0, 90.0, 180.0, 270.0)
 
 
 @dataclass(frozen=True)
@@ -39,11 +40,14 @@ def _principal_axis(coords: np.ndarray) -> np.ndarray:
     return axis / n
 
 
-def co2_linear(carbon: np.ndarray, axis: np.ndarray) -> Xyz:
+def co2_linear(carbon: np.ndarray, axis: np.ndarray, azimuth_deg: float = 0.0) -> Xyz:
     a = axis / (np.linalg.norm(axis) + 1e-12)
     tmp = np.array([1.0, 0.0, 0.0]) if abs(a[0]) < 0.9 else np.array([0.0, 1.0, 0.0])
     perp = np.cross(a, tmp)
     perp = perp / (np.linalg.norm(perp) + 1e-12)
+    side = np.cross(a, perp)
+    theta = np.radians(azimuth_deg)
+    perp = np.cos(theta) * perp + np.sin(theta) * side
     r = CO2_CO
     coords = np.vstack([carbon, carbon + r * perp, carbon - r * perp])
     return Xyz(symbols=["C", "O", "O"], coords=coords, comment="isolated CO2")
@@ -146,13 +150,15 @@ def pose_sites(host: Xyz, max_sites: int = 12) -> list[PoseSite]:
     return uniq
 
 
-def site_complex(host: Xyz, site: PoseSite) -> tuple[Xyz, dict]:
+def site_complex(
+    host: Xyz, site: PoseSite, azimuth_deg: float = 0.0
+) -> tuple[Xyz, dict]:
     """Place CO2 at site; push out along axis until host clearance is met."""
     carbon = np.array(site.carbon, dtype=float)
     axis = site.axis / (np.linalg.norm(site.axis) + 1e-12)
     dist = float(site.distance)
     for _ in range(20):
-        co2 = co2_linear(carbon, axis)
+        co2 = co2_linear(carbon, axis, azimuth_deg)
         xyz = combine_host_co2(host, co2, comment=f"site {site.tag} d={dist:.2f}")
         stats = co2_geometry_stats(xyz)
         if min(stats["min_c_host"], stats["min_o_host"]) >= SEED_CLEARANCE:
@@ -160,12 +166,13 @@ def site_complex(host: Xyz, site: PoseSite) -> tuple[Xyz, dict]:
         carbon = carbon + 0.25 * axis
         dist += 0.25
     else:
-        co2 = co2_linear(carbon, axis)
+        co2 = co2_linear(carbon, axis, azimuth_deg)
         xyz = combine_host_co2(host, co2, comment=f"site {site.tag} d={dist:.2f}")
     meta = {
         "co2_pose_type": f"site_{site.tag}",
         "co2_distance": dist,
         "binding_atom": "" if site.binding_atom < 0 else str(site.binding_atom),
+        "azimuth_deg": azimuth_deg,
     }
     return xyz, meta
 

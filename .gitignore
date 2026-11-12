@@ -13,3 +13,9 @@ tools/
 # Local QM installers / binaries if present
 *.tar.xz
 *.tar.gz
+
+# Binding pack + surrogate weights (ship via scripts/pack_binding_artifacts.sh)
+*.joblib
+artifacts/binding_predictor/
+artifacts/discovery/
+logs/

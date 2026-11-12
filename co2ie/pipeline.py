@@ -18,6 +18,7 @@ from co2ie import (
 )
 from co2ie.catalog import Candidate, sample_from_csv, sample_small, write_catalog
 from co2ie.co2_pose import (
+    AZIMUTH_ANGLES_DEG,
     co2_geometry_ok,
     generate_co2,
     pose_sites,
@@ -143,7 +144,8 @@ def _stage_crest_complex(run_dir: Path, cands: list[Candidate], *, quick: bool =
         raise FileNotFoundError("xtb not found; run bash scripts/install_xtb.sh")
     print(
         f"[poses] site seeds + xTB opt (CO2 frozen); "
-        f"≤{MAX_SITES_PER_HOST} sites/host → top {N_POSES} by xtb IE"
+        f"≤{MAX_SITES_PER_HOST} sites/host × {len(AZIMUTH_ANGLES_DEG)} azimuths "
+        f"→ top {N_POSES} by xtb IE"
     )
     co2 = generate_co2()
     co2_path = run_dir / "co2.xyz"
@@ -180,37 +182,39 @@ def _stage_crest_complex(run_dir: Path, cands: list[Candidate], *, quick: bool =
             sites = pose_sites(host, max_sites=MAX_SITES_PER_HOST)
             print(f"    {host_id}: {len(sites)} sites", flush=True)
             for s in sites:
-                seed, meta = site_complex(host, s)
-                seed_path = pose_dir / f"seed_{host_id}_{s.tag}.xyz"
-                write_xyz(seed, seed_path)
-                out_tmp = pose_dir / f"opt_{host_id}_{s.tag}.xyz"
-                anchor = s.binding_atom if s.binding_atom >= 0 else None
-                opt = opt_xyz(
-                    seed_path,
-                    out_tmp,
-                    constrain_co2=True,
-                    anchor_atom=anchor,
-                    anchor_distance=float(meta["co2_distance"]),
-                )
-                if not opt.ok or opt.energy is None:
-                    continue
-                geom = read_xyz(out_tmp)
-                if not co2_geometry_ok(geom):
-                    continue
-                ie = (opt.energy - e_host - e_co2) * HARTREE_TO_KCAL
-                if ie > XTB_IE_MAX or ie < XTB_IE_MIN:
-                    continue
-                candidates.append(
-                    {
-                        "ie": ie,
-                        "e_complex": opt.energy,
-                        "e_host": e_host,
-                        "path": out_tmp,
-                        "host_id": host_id,
-                        "tag": s.tag,
-                        "meta": meta,
-                    }
-                )
+                for azimuth_deg in AZIMUTH_ANGLES_DEG:
+                    seed, meta = site_complex(host, s, azimuth_deg=azimuth_deg)
+                    azimuth_tag = f"a{int(azimuth_deg):03d}"
+                    seed_path = pose_dir / f"seed_{host_id}_{s.tag}_{azimuth_tag}.xyz"
+                    write_xyz(seed, seed_path)
+                    out_tmp = pose_dir / f"opt_{host_id}_{s.tag}_{azimuth_tag}.xyz"
+                    anchor = s.binding_atom if s.binding_atom >= 0 else None
+                    opt = opt_xyz(
+                        seed_path,
+                        out_tmp,
+                        constrain_co2=True,
+                        anchor_atom=anchor,
+                        anchor_distance=float(meta["co2_distance"]),
+                    )
+                    if not opt.ok or opt.energy is None:
+                        continue
+                    geom = read_xyz(out_tmp)
+                    if not co2_geometry_ok(geom):
+                        continue
+                    ie = (opt.energy - e_host - e_co2) * HARTREE_TO_KCAL
+                    if ie > XTB_IE_MAX or ie < XTB_IE_MIN:
+                        continue
+                    candidates.append(
+                        {
+                            "ie": ie,
+                            "e_complex": opt.energy,
+                            "e_host": e_host,
+                            "path": out_tmp,
+                            "host_id": host_id,
+                            "tag": f"{s.tag}_{azimuth_tag}",
+                            "meta": meta,
+                        }
+                    )
         candidates.sort(key=lambda d: d["ie"])
         top = candidates[:N_POSES]
         lines = []

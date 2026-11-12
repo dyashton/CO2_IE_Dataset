@@ -1,0 +1,28 @@
+# Closed-loop CO2 discovery (RL proposals → Bayesian AL → DFT → retrain)
+seed_csv: data/compiled_gm_be.csv
+rounds_dir: artifacts/discovery
+round_size: 48
+explore_fraction: 0.25
+max_per_scaffold: 2
+element_whitelist: [C, H, N, O, F, S]
+heavy_atom_min: 4
+heavy_atom_max: 80
+formal_charge_min: -2
+formal_charge_max: 2
+# Acquisition uses IE mean (trustworthy enough) + uncertainty; DFT labels BE_GM.
+acquisition: ucb
+ucb_kappa: 1.5
+library_csvs:
+  - data/azamacro_host_library.csv
+  - data/amine_ie_designed.csv
+  - data/robust_200_candidates.csv
+  - data/peptide_co2_binders_150.csv
+  - data/diverse_small_molecules_300.csv
+elite_mutants: 200
+elite_top_n: 20
+binding_pack: artifacts/binding_predictor/pack.joblib
+dft:
+  jobs: 6
+  threads: 5
+  quick: true
+  to_stage: dft

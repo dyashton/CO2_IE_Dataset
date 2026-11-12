@@ -1,0 +1,58 @@
+# Paths shipped on the discovery-hpc branch / pack_hpc_bundle.sh.
+# One path per line; comments and blanks ignored.
+
+# Package + env
+pyproject.toml
+uv.lock
+README.md
+.gitignore
+
+# Core library (DFT + surrogate retrain)
+co2ie/__init__.py
+co2ie/catalog.py
+co2ie/co2_pose.py
+co2ie/complexes.py
+co2ie/conformers.py
+co2ie/crest.py
+co2ie/pipeline.py
+co2ie/psi4_jobs.py
+co2ie/surrogate.py
+co2ie/xtb.py
+
+# Discovery + DFT + retrain
+configs/discovery.yaml
+docs/DISCOVERY_LOOP.md
+docs/HPC_DISCOVERY.md
+docs/BINDING_PREDICTOR.md
+docs/BINDING_PREDICTOR_DATA.md
+scripts/propose_broad_hosts.py
+scripts/gate_and_select_dft_batch.py
+scripts/ingest_discovery_round.py
+scripts/retrain_binding_after_round.py
+scripts/run_discovery_round.sh
+scripts/sbatch_discovery_dft.sh
+scripts/run_parallel.py
+scripts/build_small.py
+scripts/build_binding_predictor_train.py
+scripts/train_binding_predictor.py
+scripts/check_env.py
+scripts/env.sh
+scripts/install_crest.sh
+scripts/install_xtb.sh
+scripts/fetch_binding_pack.sh
+scripts/pack_binding_artifacts.sh
+scripts/pack_hpc_bundle.sh
+scripts/hpc_manifest.txt
+scripts/__init__.py
+tests/test_binding_predictor_helpers.py
+
+# Seed + library CSVs for propose_broad_hosts
+data/compiled_gm_be.csv
+data/compiled_4.csv
+data/binding_predictor_train.csv
+data/azamacro_host_library.csv
+data/amine_ie_designed.csv
+data/robust_200_candidates.csv
+data/peptide_co2_binders_150.csv
+data/diverse_small_molecules_300.csv
+data/sources.yaml
