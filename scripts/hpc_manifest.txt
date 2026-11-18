@@ -30,7 +30,11 @@ scripts/gate_and_select_dft_batch.py
 scripts/ingest_discovery_round.py
 scripts/retrain_binding_after_round.py
 scripts/run_discovery_round.sh
+scripts/run_discovery_campaign.sh
+scripts/run_local_round.sh
 scripts/sbatch_discovery_dft.sh
+scripts/sbatch_select_round.sh
+scripts/sbatch_ingest_retrain.sh
 scripts/run_parallel.py
 scripts/build_small.py
 scripts/build_binding_predictor_train.py
@@ -48,6 +52,7 @@ tests/test_binding_predictor_helpers.py
 
 # Seed + library CSVs for propose_broad_hosts
 data/compiled_gm_be.csv
+data/compiled_gm_be_discovery.csv
 data/compiled_4.csv
 data/binding_predictor_train.csv
 data/azamacro_host_library.csv

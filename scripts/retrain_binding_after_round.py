@@ -37,6 +37,14 @@ def main() -> None:
         action="store_true",
         help="Also copy pack into sibling Molecule_Generation_Workflow/artifacts",
     )
+    parser.add_argument(
+        "--be-gm-clip",
+        default="p1p99",
+        choices=("p1p99", "none", "fixed"),
+        help="Train-only BE_GM filter passed to build_binding_predictor_train.py",
+    )
+    parser.add_argument("--be-gm-lo", type=float, default=None)
+    parser.add_argument("--be-gm-hi", type=float, default=None)
     args = parser.parse_args()
 
     if not args.compiled.is_file():
@@ -54,7 +62,13 @@ def main() -> None:
             str(args.compiled),
             "--out",
             str(args.train_csv),
+            "--be-gm-clip",
+            args.be_gm_clip,
         ]
+        if args.be_gm_lo is not None:
+            cmd.extend(["--be-gm-lo", str(args.be_gm_lo)])
+        if args.be_gm_hi is not None:
+            cmd.extend(["--be-gm-hi", str(args.be_gm_hi)])
         try:
             subprocess.run(cmd, check=True, cwd=ROOT)
         except subprocess.CalledProcessError:
@@ -67,6 +81,8 @@ def main() -> None:
         return
 
     train = ROOT / "scripts" / "train_binding_predictor.py"
+    # --skip-build: we already wrote --data from discovery compiled (+ clip).
+    # Without it, train_binding_predictor rebuilds from seed compiled_gm_be.csv.
     subprocess.run(
         [
             "uv",
@@ -77,6 +93,7 @@ def main() -> None:
             str(args.train_csv),
             "--out-dir",
             str(args.out_dir),
+            "--skip-build",
         ],
         check=True,
         cwd=ROOT,
@@ -84,14 +101,14 @@ def main() -> None:
     print(f"[retrain] pack refreshed under {args.out_dir}")
 
     if args.sync_mgw:
-        mgw_fetch = (
-            ROOT.parent
-            / "Molecule_Generation_Workflow"
-            / "scripts"
-            / "fetch_binding_pack.sh"
-        )
+        mgw_root = ROOT.parent / "Molecule_Generation_Workflow"
+        mgw_fetch = mgw_root / "scripts" / "fetch_binding_pack.sh"
         if mgw_fetch.is_file():
-            subprocess.run(["bash", str(mgw_fetch), str(args.out_dir)], check=True)
+            subprocess.run(
+                ["bash", str(mgw_fetch), str(args.out_dir)],
+                check=True,
+                cwd=mgw_root,
+            )
             print("[retrain] synced pack to Molecule_Generation_Workflow")
 
 

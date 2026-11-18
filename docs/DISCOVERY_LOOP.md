@@ -47,6 +47,17 @@ uv run python scripts/build_small.py \
   --run-dir runs/discovery_smoke3
 ```
 
+## Laptop / local (no Slurm)
+
+Preferred laptop layout is the umbrella repo [`co2-discovery`](https://github.com/dyashton/co2-discovery) (submodules + runbook). One Slurm-free round:
+
+```bash
+# From CO2_IE_Dataset with sibling Molecule_Generation_Workflow:
+JOBS=3 THREADS=4 bash scripts/run_local_round.sh round_003
+```
+
+Defaults (`JOBS=3`, `THREADS=4`) fit a 32 GB laptop. See the umbrella README for Psi4/CREST/xTB install and binding-pack fetch.
+
 ## Portable layout (all-on-HPC)
 
 Preferred cluster layout — see [`HPC_DISCOVERY.md`](HPC_DISCOVERY.md):

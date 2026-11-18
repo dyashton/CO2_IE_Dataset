@@ -22,7 +22,13 @@ done
 DIR="artifacts/discovery/$ROUND"
 mkdir -p "$DIR" logs
 
-PROPOSE_ARGS=(--out "$DIR/proposals.csv" --seed-csv data/compiled_gm_be.csv)
+# Prefer growing discovery labels so later rounds exclude DFT hits.
+SEED_CSV="data/compiled_gm_be.csv"
+if [[ -f data/compiled_gm_be_discovery.csv ]]; then
+  SEED_CSV="data/compiled_gm_be_discovery.csv"
+fi
+
+PROPOSE_ARGS=(--out "$DIR/proposals.csv" --seed-csv "$SEED_CSV")
 if [[ -n "$RL_PROPOSALS" ]]; then
   PROPOSE_ARGS+=(--rl-proposals "$RL_PROPOSALS")
 fi
